@@ -3,6 +3,7 @@ package config
 import (
 	"log/slog"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -11,6 +12,8 @@ import (
 type Config struct {
 	LogLevel       string
 	RedisAddress   string
+	RedisPassword  string
+	RedisDB        int
 	UpdateInterval time.Duration
 }
 
@@ -23,6 +26,8 @@ func LoadConfig() (*Config, error) {
 		LogLevel:       getEnv("LOG_LEVEL", "info"),
 		UpdateInterval: getEnvAsDuration("UPDATE_INTERVAL", 5*time.Minute),
 		RedisAddress:   getEnv("REDIS_ADDRESS", "localhost:6379"),
+		RedisPassword:  getEnv("REDIS_PASSWORD", ""),
+		RedisDB:        getEnvAsInt("REDIS_DB", 0),
 	}
 
 	return config, nil
@@ -44,6 +49,19 @@ func getEnvAsDuration(key string, defaultValue time.Duration) time.Duration {
 		return defaultValue
 	}
 	value, err := time.ParseDuration(valueStr)
+	if err != nil {
+		slog.Warn("неверный формат для %s, используется значение по умолчанию %v", key, defaultValue)
+		return defaultValue
+	}
+	return value
+}
+
+func getEnvAsInt(key string, defaultValue int) int {
+	valueStr := getEnv(key, "")
+	if valueStr == "" {
+		return defaultValue
+	}
+	value, err := strconv.Atoi(valueStr)
 	if err != nil {
 		slog.Warn("неверный формат для %s, используется значение по умолчанию %v", key, defaultValue)
 		return defaultValue

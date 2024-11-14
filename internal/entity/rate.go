@@ -3,12 +3,11 @@ package entity
 import "time"
 
 type Rate struct {
-	ID                uint
-	Name              string
-	Price             float64
-	MinPriceDay       float64
-	MaxPriceDay       float64
-	Percent_change_1h float64
-	LastUpdated       time.Time
-	Created_at        time.Time
+	Name            string    `json:"name"`
+	Symbol          string    `json:"symbol"`
+	Price           float64   `json:"current_price"`
+	MinPriceDay     float64   `json:"low_24h"`
+	MaxPriceDay     float64   `json:"high_24h"`
+	PercentChange1h float64   `json:"price_change_percentage_1h_in_currency"`
+	LastUpdated     time.Time `json:"last_updated"`
 }

@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"currency-service/internal/entity"
 	"time"
 )
@@ -8,6 +9,5 @@ import (
 type RateServiceInterface interface {
 	UpdateRates() error
 	StartRateUpdater(interval time.Duration)
-	GetAllRates() ([]entity.Rate, error)
-	GetRateByCryptocurrency(cryptocurrency string) (entity.Rate, error)
+	GetRates(context context.Context, cryptocurrencies []string) ([]entity.Rate, error)
 }

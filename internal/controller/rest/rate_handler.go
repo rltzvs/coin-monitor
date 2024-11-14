@@ -2,6 +2,7 @@ package rest
 
 import (
 	"log/slog"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,10 +16,16 @@ func NewRateHandler(service RateServiceInterface, logger *slog.Logger) *RateHand
 	return &RateHandler{service: service, logger: logger}
 }
 
-// Отдает все курсы валют
-func (h *RateHandler) GetAllRates(c *gin.Context) {
-}
+func (h *RateHandler) GetRates(c *gin.Context) {
+	currenciesParam := c.Query("currencies")
+	cryptocurrencies := strings.Split(currenciesParam, ",")
 
-// Отдает курс конкретной валюты
-func (h *RateHandler) GetRateByCryptocurrency(c *gin.Context) {
+	rates, err := h.service.GetRates(c, cryptocurrencies)
+	if err != nil {
+		h.logger.Error("Ошибка при получении курсов", "error", err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	h.logger.Info("Курсы успешно получены")
+	c.JSON(200, rates)
 }

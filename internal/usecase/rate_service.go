@@ -1,20 +1,19 @@
 package usecase
 
 import (
+	"context"
 	"currency-service/internal/entity"
-	"currency-service/internal/repository/external_api"
-	"currency-service/internal/repository/redis"
 	"log/slog"
 	"time"
 )
 
 type RateService struct {
-	repo   redis.RedisRateRepository      // RateRepository
-	api    external_api.ExternalAPIClient // ExternalAPIClient
+	repo   RateRepository
+	api    ExternalAPIClient
 	logger *slog.Logger
 }
 
-func NewRateService(repo redis.RedisRateRepository, api external_api.ExternalAPIClient, logger *slog.Logger) *RateService {
+func NewRateService(repo RateRepository, api ExternalAPIClient, logger *slog.Logger) *RateService {
 	return &RateService{
 		repo:   repo,
 		api:    api,
@@ -22,21 +21,47 @@ func NewRateService(repo redis.RedisRateRepository, api external_api.ExternalAPI
 	}
 }
 
-// UpdateRates обновляет курсы валют с внешнего API и сохраняет их в хранилище.
 func (s *RateService) UpdateRates() error {
+	s.logger.Info("Запуск UpdateRates")
+
+	rates, err := s.api.FetchRates()
+	if err != nil {
+		s.logger.Error("Ошибка при обновлении курсов", "error", err)
+		return err
+	}
+
+	if err := s.repo.SaveRate(context.Background(), rates); err != nil {
+		s.logger.Error("Ошибка при сохранении курсов", "error", err)
+		return err
+	}
+
+	s.logger.Info("Курсы успешно обновлены")
 	return nil
 }
 
-// StartRateUpdater запускает обновление курсов в фоновом режиме каждые N минут.
 func (s *RateService) StartRateUpdater(interval time.Duration) {
+	s.logger.Info("Запуск StartRateUpdater", "interval", interval)
+
+	if err := s.UpdateRates(); err != nil {
+		s.logger.Error("Ошибка при первоначальном обновлении курсов", "error", err)
+	}
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		if err := s.UpdateRates(); err != nil {
+			s.logger.Error("Ошибка при обновлении курсов", "error", err)
+		}
+	}
 }
 
-// GetAllRates возвращает все курсы валют.
-func (s *RateService) GetAllRates() ([]entity.Rate, error) {
-	return s.repo.GetAllRates()
-}
-
-// GetRateByCryptocurrency возвращает курс конкретной валюты.
-func (s *RateService) GetRateByCryptocurrency(cryptocurrency string) (entity.Rate, error) {
-	return s.repo.GetRateByCryptocurrency(cryptocurrency)
+func (s *RateService) GetRates(context context.Context, cryptocurrencies []string) ([]entity.Rate, error) {
+	s.logger.Info("Запуск GetRates", "cryptocurrencies", cryptocurrencies)
+	rates, err := s.repo.GetRates(context, cryptocurrencies)
+	if err != nil {
+		s.logger.Error("Ошибка при получении курсов", "error", err)
+		return nil, err
+	}
+	return rates, err
 }
