@@ -1,6 +1,7 @@
 package rest
 
 import (
+	_ "currency-service/internal/entity"
 	"log/slog"
 	"strings"
 
@@ -16,6 +17,15 @@ func NewRateHandler(service RateServiceInterface, logger *slog.Logger) *RateHand
 	return &RateHandler{service: service, logger: logger}
 }
 
+// @Summary Получить курсы валют
+// @Description Возвращает курсы валют на основе переданных параметров
+// @Tags Курсы валют
+// @Accept json
+// @Produce json
+// @Param currencies query string true "Список валют через запятую" example="USD,EUR,BTC"
+// @Success 200 {array} entity.Rate "Возвращает список курсов валют" // Указываем полный путь до типа Rate
+// @Failure 500 {object} map[string]interface{} "Ошибка сервера"
+// @Router /rates [get]
 func (h *RateHandler) GetRates(c *gin.Context) {
 	currenciesParam := c.Query("currencies")
 	cryptocurrencies := strings.Split(currenciesParam, ",")

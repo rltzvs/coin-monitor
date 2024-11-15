@@ -13,8 +13,16 @@ import (
 	"context"
 	"log/slog"
 
+	_ "currency-service/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files" // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+// @title Currency API
+// @version 1.0
+// @description API для получения курсов валют
 
 func main() {
 	// Настройка конфигурации
@@ -54,6 +62,7 @@ func main() {
 	router.GET("/rates", func(c *gin.Context) {
 		rateHandler.GetRates(c)
 	})
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Запуск HTTP-сервера
 	logger.Error("Starting server on port 8080")
