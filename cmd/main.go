@@ -57,6 +57,7 @@ func main() {
 		defer wg.Done()
 		rateService.StartRateUpdater(config.UpdateInterval)
 	}()
+
 	// Настройка маршрутов Gin
 	router := gin.Default()
 	router.GET("/rates", func(c *gin.Context) {
@@ -65,7 +66,6 @@ func main() {
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Запуск HTTP-сервера
-	logger.Error("Starting server on port 8080")
 	if err := router.Run(":8080"); err != nil {
 		logger.Error("Ошибка запуска HTTP-сервера", "error", err)
 	}

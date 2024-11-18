@@ -63,5 +63,6 @@ func (s *RateService) GetRates(context context.Context, cryptocurrencies []strin
 		s.logger.Error("Ошибка при получении курсов", "error", err)
 		return nil, err
 	}
+	s.logger.Info("Курсы успешно получены", "count", len(rates))
 	return rates, err
 }

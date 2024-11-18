@@ -39,7 +39,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Возвращает список курсов валют\" // Указываем полный путь до типа Rate",
+                        "description": "Возвращает список курсов валют",
                         "schema": {
                             "type": "array",
                             "items": {
