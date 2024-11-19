@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16  # Используем PostgreSQL 16
+    container_name: postgres_db  # Имя контейнера
+    environment:
+      - POSTGRES_USER=postgres    # Имя пользователя для подключения
+      - POSTGRES_PASSWORD=postgres  # Пароль для подключения
+      - POSTGRES_DB=postgres  # Имя базы данных, которая будет создана
+    ports:
+      - "5436:5432"  # Пробрасываем порт 5432 на хостовую машину
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Монтируем volume для сохранности данных
+
+volumes:
+  postgres_data: {}  # Создаем volume для данных
