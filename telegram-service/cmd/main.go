@@ -1,8 +1,10 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"telegram-service/internal/config"
+	"telegram-service/internal/controller/telegram"
 	"telegram-service/internal/logger"
 	"telegram-service/internal/repository/postgres"
 )
@@ -21,11 +23,15 @@ func main() {
 	// Подключение к Postgres
 	db, err := postgres.NewDBConnection(&config.Database)
 	if err != nil {
-		slog.Error("Ошибка подключения к Postgres: %v", err)
+		logger.Error("Ошибка подключения к Postgres: %v", err)
 	}
 	defer db.Close()
 
 	// Инициализация Telegram бота
+	bot, err := telegram.NewTelegramBot(config.TelegramToken)
+	if err != nil {
+		log.Fatalf("Failed to initialize Telegram bot: %v", err)
+	}
 
-	// Запуск Telegram бота
+	bot.Run()
 }

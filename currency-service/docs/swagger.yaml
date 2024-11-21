@@ -1,0 +1,53 @@
+definitions:
+  entity.Rate:
+    properties:
+      current_price:
+        type: number
+      high_24h:
+        type: number
+      last_updated:
+        type: string
+      low_24h:
+        type: number
+      name:
+        type: string
+      price_change_percentage_1h_in_currency:
+        type: number
+      symbol:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API для получения курсов валют
+  title: Currency API
+  version: "1.0"
+paths:
+  /rates:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает курсы валют на основе переданных параметров
+      parameters:
+      - description: Список валют через запятую
+        in: query
+        name: currencies
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Возвращает список курсов валют
+          schema:
+            items:
+              $ref: '#/definitions/entity.Rate'
+            type: array
+        "500":
+          description: Ошибка сервера
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить курсы валют
+      tags:
+      - Курсы валют
+swagger: "2.0"

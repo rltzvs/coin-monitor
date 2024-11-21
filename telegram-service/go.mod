@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
 	golang.org/x/crypto v0.29.0 // indirect

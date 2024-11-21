@@ -1,0 +1,81 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API для получения курсов валют",
+        "title": "Currency API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/rates": {
+            "get": {
+                "description": "Возвращает курсы валют на основе переданных параметров",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Курсы валют"
+                ],
+                "summary": "Получить курсы валют",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Список валют через запятую",
+                        "name": "currencies",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Возвращает список курсов валют",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Rate"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Rate": {
+            "type": "object",
+            "properties": {
+                "current_price": {
+                    "type": "number"
+                },
+                "high_24h": {
+                    "type": "number"
+                },
+                "last_updated": {
+                    "type": "string"
+                },
+                "low_24h": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price_change_percentage_1h_in_currency": {
+                    "type": "number"
+                },
+                "symbol": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
