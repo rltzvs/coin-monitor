@@ -1,15 +1,12 @@
 package telegram
 
 import (
-	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// TelegramBot структура для бота
 type TelegramBot struct {
 	API      *tgbotapi.BotAPI
-	Commands CommandHandler
+	Commands TelegramHandler
 }
 
 func NewTelegramBot(token string) (*TelegramBot, error) {
@@ -19,32 +16,29 @@ func NewTelegramBot(token string) (*TelegramBot, error) {
 	}
 
 	bot.Debug = false
-	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	telegramBot := &TelegramBot{
 		API: bot,
 	}
 
-	// Назначение стандартного обработчика команд
-	telegramBot.Commands = &TestCommandHandler{}
+	telegramBot.Commands = TelegramHandler{
+		Bot: bot,
+	}
 
 	return telegramBot, nil
 }
 
-// Run запускает обработку сообщений
 func (tb *TelegramBot) Run() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
 	updates := tb.API.GetUpdatesChan(u)
 
-	log.Println("Telegram bot is running...")
-
 	for update := range updates {
 		if update.Message == nil {
 			continue
 		}
 
-		go tb.Commands.HandleCommand(update.Message)
+		go tb.Commands.HandleCommand(update)
 	}
 }
