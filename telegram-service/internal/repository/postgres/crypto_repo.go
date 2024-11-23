@@ -1,20 +1,23 @@
 package postgres
 
-import "telegram-service/internal/entity"
+import (
+	"context"
+	"telegram-service/internal/entity"
 
-type PostgresCryptoRepository struct{}
+	"github.com/jackc/pgx/v5"
+)
 
-func (r *PostgresCryptoRepository) CreateCrypto(crypto entity.Crypto) error {
-	// Заглушка для вставки новой записи в таблицу crypto
-	return nil
+type CryptoRepository struct {
+	conn *pgx.Conn
 }
 
-func (r *PostgresCryptoRepository) GetAllCryptos() ([]entity.Crypto, error) {
-	// Заглушка для получения всех криптовалют
-	return []entity.Crypto{}, nil
+func NewCryptoRepository(conn *pgx.Conn) *CryptoRepository {
+	return &CryptoRepository{conn: conn}
 }
 
-func (r *PostgresCryptoRepository) GetCryptoByID(id int) (*entity.Crypto, error) {
-	// Заглушка для получения криптовалюты по ID
-	return &entity.Crypto{}, nil
+func (r *CryptoRepository) CreateCrypto(ctx context.Context, crypto *entity.Crypto) error {
+	query := `INSERT INTO cryptos (symbol) VALUES ($1)`
+
+	_, err := r.conn.Exec(ctx, query, crypto.Symbol)
+	return err
 }

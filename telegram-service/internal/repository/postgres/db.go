@@ -17,11 +17,11 @@ func NewDBConnection(cfg *config.DatabaseConfig) (*DB, error) {
 
 	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {
-		return nil, fmt.Errorf("unable to connect to database: %v", err)
+		return nil, fmt.Errorf("не удалось подключиться к базе данных: %v", err)
 	}
 
 	if err := conn.Ping(context.Background()); err != nil {
-		return nil, fmt.Errorf("unable to ping database: %v", err)
+		return nil, fmt.Errorf("не удалось отправить сигнал подключения: %v", err)
 	}
 
 	return &DB{conn: conn}, nil
